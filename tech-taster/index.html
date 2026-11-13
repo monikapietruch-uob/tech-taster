@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Move the robot: a ten-minute tech taster (prototype)</title>
+  <meta name="description" content="Never written a line of code? Move a robot with a few commands. Ten minutes, no sign-up. A prototype for discussion.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300703c'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='%23ffd200'/%3E%3Cpath d='M30 22l14 10-14 10z' fill='%2310231a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the task</a>
+
+  <header class="strip">
+    <div class="wrap strip-inner">
+      <p>Prototype. Not an official University of Bedfordshire page.</p>
+      <nav aria-label="About this site">
+        <a href="tutors.html">For tutors</a>
+        <a href="about.html">About this prototype</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap page" tabindex="-1">
+
+    <section class="sign" aria-labelledby="page-title">
+      <div class="sign-face">
+        <h1 id="page-title">
+          <span class="sign-ask">Never written a line of code?</span>
+          <span class="sign-do">Move the robot.</span>
+        </h1>
+        <p class="sign-promise">Ten minutes. No sign-up. Nobody sees your answers.</p>
+      </div>
+    </section>
+
+    <noscript>
+      <p class="notice">This taster needs JavaScript to move the robot. Turn JavaScript on in your browser, then load the page again.</p>
+    </noscript>
+
+    <section class="bench" aria-labelledby="task-title">
+
+      <div class="bench-see">
+        <nav class="steps" aria-label="Tasks">
+          <ol id="steps"></ol>
+        </nav>
+        <h2 id="task-title" tabindex="-1"></h2>
+        <p id="task-intro"></p>
+        <div id="world" class="world"></div>
+        <p id="world-description" class="world-description"></p>
+        <div id="result" class="result" role="status">
+          <strong id="result-title"></strong>
+          <span id="result-detail"></span>
+          <span id="trace" class="trace" aria-hidden="true"></span>
+        </div>
+        <button type="button" id="next" class="button button-main button-next" hidden></button>
+      </div>
+
+      <div class="bench-do">
+        <label for="code">Your program</label>
+        <p id="code-help" class="help">One command on each line.</p>
+        <textarea id="code" class="code-box" rows="6" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-describedby="code-help"></textarea>
+        <div class="adders" role="group" aria-label="Change the program without typing">
+          <span id="adder-buttons"></span>
+          <button type="button" id="remove-last" class="button">Remove last line</button>
+        </div>
+        <p id="note" class="visually-hidden" role="status"></p>
+        <div class="actions">
+          <button type="button" id="run" class="button button-main">Run the program</button>
+          <button type="button" id="reset" class="button">Start again</button>
+          <button type="button" id="hint" class="button">Show a hint</button>
+        </div>
+        <p id="hint-text" class="hint" role="status" hidden></p>
+        <p class="word">New word: <strong id="word-term"></strong>. <span id="word-meaning"></span></p>
+      </div>
+
+    </section>
+
+    <section id="finish" class="finish" aria-labelledby="finish-title" hidden>
+      <h2 id="finish-title" tabindex="-1">You wrote three programs.</h2>
+      <p>You gave a machine instructions in a language it understands. You found a bug and you fixed it. Every programmer started the same way.</p>
+      <h3>Three words you now know</h3>
+      <dl class="words">
+        <div>
+          <dt>command</dt>
+          <dd>One instruction, such as <code>move()</code>.</dd>
+        </div>
+        <div>
+          <dt>program</dt>
+          <dd>A list of commands. The computer does them in order, from the top.</dd>
+        </div>
+        <div>
+          <dt>bug</dt>
+          <dd>A mistake in a program. Finding and fixing it is called debugging.</dd>
+        </div>
+      </dl>
+      <h3>What next</h3>
+      <p class="placeholder">This part is a placeholder. In a real version your next step would go here: course information, an open day, or a route through a local college.</p>
+      <button type="button" id="again" class="button">Do the tasks again</button>
+    </section>
+
+    <section class="routes" aria-labelledby="routes-title">
+      <h2 id="routes-title">More tasters</h2>
+      <ul class="fingerpost">
+        <li><span class="route-name">Move the robot</span> <span class="route-state route-open">Open now, 10 minutes</span></li>
+        <li><span class="route-name">Your first program</span> <span class="route-state">Coming later</span></li>
+        <li><span class="route-name">Try AI in ten minutes</span> <span class="route-state">Coming later</span></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Prototype for discussion, version 1. Not an official University of Bedfordshire page. No sign-up, no cookies and no tracking. Your progress stays in this browser.</p>
+      <nav class="foot-links" aria-label="More about this site">
+        <a href="about.html">About this prototype</a>
+        <a href="about.html#accessibility">Accessibility</a>
+        <a href="about.html#privacy">Privacy</a>
+        <a href="tutors.html">For tutors</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/engine.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

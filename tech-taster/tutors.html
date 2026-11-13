@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>For tutors: run the robot taster with a group (prototype)</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300703c'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='%23ffd200'/%3E%3Cpath d='M30 22l14 10-14 10z' fill='%2310231a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the notes</a>
+
+  <header class="strip">
+    <div class="wrap strip-inner">
+      <p>Prototype. Not an official University of Bedfordshire page.</p>
+      <nav aria-label="About this site">
+        <a href="index.html">The taster</a>
+        <a href="about.html">About this prototype</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap page prose" tabindex="-1">
+    <a class="back" href="index.html">Back to the taster</a>
+
+    <h1>Run this taster with a group</h1>
+    <p>These notes are for a tutor or teacher who wants to use the taster in a session of about an hour. They are a first draft.</p>
+
+    <h2>Before the session</h2>
+    <ul>
+      <li>Open the taster on the network the group will use. It needs a web browser and nothing else: no accounts and nothing to install.</li>
+      <li>It works on phones, tablets and laptops. On a phone, the Add buttons mean nobody has to type brackets.</li>
+      <li>Do the three tasks yourself once. It takes about five minutes.</li>
+      <li>On a shared computer, open the page in a private window, so each person starts fresh.</li>
+    </ul>
+
+    <h2>A one-hour plan</h2>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Time</th>
+          <th scope="col">What happens</th>
+          <th scope="col">What to count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>5 minutes</td>
+          <td>Everyone answers one question on a slip of paper, with no name: “Could you do a tech course?” from 1 (no) to 5 (yes).</td>
+          <td>The answers</td>
+        </tr>
+        <tr>
+          <td>40 minutes</td>
+          <td>The three tasks, at each person’s own speed. Working in pairs is fine.</td>
+          <td>Who starts, and who finishes each task</td>
+        </tr>
+        <tr>
+          <td>5 minutes</td>
+          <td>The same question again, on the other side of the slip.</td>
+          <td>The answers</td>
+        </tr>
+        <tr>
+          <td>10 minutes</td>
+          <td>What next: where this leads and who to talk to.</td>
+          <td>Who asks for more information</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>The three tasks, with one answer for each</h2>
+    <p>There is more than one right answer. Any program that puts the robot on the flag counts.</p>
+
+    <h3>Task 1: Reach the flag</h3>
+    <p>New word: command. The starter program stops one square short, on purpose. Most people fix it within a minute.</p>
+<pre>move()
+move()
+move()</pre>
+
+    <h3>Task 2: Turn the corner</h3>
+    <p>New word: program. The point to draw out is that <code>turn_left()</code> turns the robot but does not move it.</p>
+<pre>move()
+move()
+turn_left()
+move()</pre>
+
+    <h3>Task 3: Fix the bug</h3>
+    <p>New word: bug. The starter program walks into a rock on line 2. People have to read the message, then plan a way round.</p>
+<pre>turn_left()
+move()
+turn_right()
+move()
+move()
+move()</pre>
+
+    <h2>Mistakes you will see</h2>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">What happens</th>
+          <th scope="col">What the page says</th>
+          <th scope="col">What you can say</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Someone types <code>Move()</code></td>
+          <td>Use small letters. Write move().</td>
+          <td>Computers are fussy about capital letters. People are not.</td>
+        </tr>
+        <tr>
+          <td>Someone types <code>move</code></td>
+          <td>Add brackets at the end. Write move().</td>
+          <td>The brackets mean “do it now”.</td>
+        </tr>
+        <tr>
+          <td>They expect <code>turn_left()</code> to move the robot</td>
+          <td>Not there yet.</td>
+          <td>Turning and moving are two different commands.</td>
+        </tr>
+        <tr>
+          <td>Too many <code>move()</code> lines</td>
+          <td>The robot cannot leave the world.</td>
+          <td>Count the squares, then count the lines.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>When someone is stuck</h2>
+    <ul>
+      <li>Ask them to press Run and say out loud what the robot did. The answer is usually in what they see.</li>
+      <li>Point to the Show a hint button before you give an answer. The last hint in task 3 is a full answer.</li>
+      <li>“Not there yet” is the message everyone sees first. It is part of the task, not a failure.</li>
+    </ul>
+
+    <h2>What the taster keeps</h2>
+    <p>Nothing leaves the device. Progress is kept in that browser only. On a shared computer the next person sees the last person’s progress, which is why a private window helps.</p>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Prototype for discussion, version 1. Not an official University of Bedfordshire page. No sign-up, no cookies and no tracking.</p>
+      <nav class="foot-links" aria-label="More about this site">
+        <a href="index.html">The taster</a>
+        <a href="about.html">About this prototype</a>
+        <a href="about.html#accessibility">Accessibility</a>
+        <a href="about.html#privacy">Privacy</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
