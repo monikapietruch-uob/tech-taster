@@ -1,13 +1,14 @@
 /*
-  Tech taster page script (version 1)
+  Tech taster page script (version 2)
   -----------------------------------
   This file connects the engine to the page. It:
-    - draws the world and the robot;
+    - draws the floor, the robot, the cup and the plant;
     - listens to the buttons and the code box;
     - plays the robot's moves one at a time and reports the result;
     - remembers progress in this browser only (nothing is sent anywhere).
 
-  The rules of the robot's world live in engine.js. The tasks live in tasks.js.
+  The rules of the robot's world live in engine.js. The tasks and the story
+  live in tasks.js. The colours live in css/site.css and js/look.js.
 */
 (function () {
   "use strict";
@@ -18,10 +19,11 @@
     return; // the other two scripts did not load, so there is nothing to run
   }
 
-  const STORE_KEY = "tech-taster-v1";
+  const STORE_KEY = "tech-taster-v2";
   const SVG = "http://www.w3.org/2000/svg";
   const CELL = 80; // size of one square in the drawing
   const PAD = 6; // space around the squares
+  const TOP = 16; // extra space above the top row, so the steam has room to rise
   const START_ANGLES = { east: 0, south: 90, west: 180, north: -90 };
 
   // People who ask their device for less motion get short, plain steps.
@@ -49,13 +51,14 @@
     hintText: document.getElementById("hint-text"),
     wordTerm: document.getElementById("word-term"),
     wordMeaning: document.getElementById("word-meaning"),
+    realLife: document.getElementById("real-life"),
     finish: document.getElementById("finish"),
     finishTitle: document.getElementById("finish-title"),
     again: document.getElementById("again")
   };
 
   let progress = loadProgress(); // which task is open, the code for each task, which are done
-  let robotPicture = null; // the robot's drawing in the current world
+  let robotPicture = null; // the robot's drawing on the current floor
   let angle = 0; // how far the robot's drawing is turned, in degrees
   let running = false; // true while the robot is moving
   let hintsShown = 0;
@@ -107,7 +110,7 @@
     }
   }
 
-  /* ---------- Drawing the world ---------- */
+  /* ---------- Drawing ---------- */
 
   // Makes one SVG shape with the attributes given.
   function shape(name, attributes) {
@@ -118,24 +121,62 @@
     return node;
   }
 
-  // The middle of square number `index`, measured in drawing units.
-  function centre(index) {
-    return PAD + index * CELL + CELL / 2;
+  // The middle of a square, measured in drawing units.
+  function centreX(col) {
+    return PAD + col * CELL + CELL / 2;
   }
+
+  function centreY(row) {
+    return TOP + row * CELL + CELL / 2;
+  }
+
+  // The small pictures. Each one is drawn around the point (0, 0), so the same
+  // drawing can be put on any square. The colours come from css/site.css.
+
+  function drawCup(group) {
+    group.appendChild(shape("rect", { class: "cup-saucer", x: -22, y: 19, width: 44, height: 5, rx: 2.5 }));
+    group.appendChild(shape("path", { class: "cup-handle", d: "M 16 -3 C 27 -3 27 11 14.4 11" }));
+    group.appendChild(
+      shape("path", { class: "cup-body", d: "M -16 -8 H 16 L 13 15 Q 12.6 18 9.6 18 H -9.6 Q -12.6 18 -13 15 Z" })
+    );
+    group.appendChild(shape("path", { class: "cup-stripe", d: "M -15.2 -2 H 15.2 L 14.7 2 H -14.7 Z" }));
+    group.appendChild(shape("path", { class: "cup-stripe", d: "M -14.2 6 H 14.2 L 13.7 10 H -13.7 Z" }));
+  }
+
+  function drawPlant(group) {
+    const leaf = "M 0 3 C -9 -7 -8 -22 0 -29 C 8 -22 9 -7 0 3 Z";
+    group.appendChild(shape("path", { class: "plant-leaf", d: leaf, transform: "rotate(-42 0 3)" }));
+    group.appendChild(shape("path", { class: "plant-leaf", d: leaf, transform: "rotate(42 0 3)" }));
+    group.appendChild(shape("path", { class: "plant-leaf", d: leaf }));
+    group.appendChild(shape("path", { class: "plant-pot", d: "M -13 7 H 13 L 9.5 27 H -9.5 Z" }));
+    group.appendChild(shape("rect", { class: "plant-pot", x: -15, y: 2, width: 30, height: 7, rx: 2 }));
+  }
+
+  function drawFlag(group) {
+    group.appendChild(shape("line", { class: "flag-pole", x1: -12, y1: 26, x2: -12, y2: -26 }));
+    group.appendChild(shape("path", { class: "flag-cloth", d: "M -12 -26 L 22 -15 L -12 -4 Z" }));
+  }
+
+  function drawRock(group) {
+    group.appendChild(shape("polygon", { class: "rock", points: "-25,16 -19,-9 -3,-25 18,-17 27,5 13,25 -12,25" }));
+  }
+
+  // Which drawing goes with which name in tasks.js.
+  const PICTURES = { cup: drawCup, plant: drawPlant, flag: drawFlag, rock: drawRock };
 
   function drawWorld(task) {
     const width = task.cols * CELL + PAD * 2;
-    const height = task.rows * CELL + PAD * 2;
+    const height = task.rows * CELL + TOP + PAD;
     const svg = shape("svg", { viewBox: "0 0 " + width + " " + height, "aria-hidden": "true", focusable: "false" });
     svg.style.maxWidth = Math.round(width * 1.25) + "px";
 
     for (let row = 0; row < task.rows; row++) {
       for (let col = 0; col < task.cols; col++) {
-        const isGoal = row === task.flag.row && col === task.flag.col;
+        const isGoal = row === task.goal.row && col === task.goal.col;
         svg.appendChild(
           shape("rect", {
             x: PAD + col * CELL,
-            y: PAD + row * CELL,
+            y: TOP + row * CELL,
             width: CELL,
             height: CELL,
             class: isGoal ? "tile tile-goal" : "tile"
@@ -144,25 +185,42 @@
       }
     }
 
-    task.rocks.forEach(function (rock) {
-      const group = shape("g", { transform: "translate(" + centre(rock.col) + " " + centre(rock.row) + ")" });
-      group.appendChild(shape("polygon", { class: "rock", points: "-25,16 -19,-9 -3,-25 18,-17 27,5 13,25 -12,25" }));
+    task.blocks.forEach(function (block) {
+      const group = shape("g", { transform: "translate(" + centreX(block.col) + " " + centreY(block.row) + ")" });
+      (PICTURES[block.name] || drawRock)(group);
       svg.appendChild(group);
     });
 
-    const flag = shape("g", { transform: "translate(" + centre(task.flag.col) + " " + centre(task.flag.row) + ")" });
-    flag.appendChild(shape("line", { class: "flag-pole", x1: -12, y1: 26, x2: -12, y2: -26 }));
-    flag.appendChild(shape("path", { class: "flag-cloth", d: "M -12 -26 L 22 -15 L -12 -4 Z" }));
-    svg.appendChild(flag);
+    // The goal: a ring that marks the square, with the cup inside it.
+    const goal = shape("g", { transform: "translate(" + centreX(task.goal.col) + " " + centreY(task.goal.row) + ")" });
+    goal.appendChild(shape("circle", { class: "goal-ring", r: 34 }));
+    const goalPicture = shape("g", { transform: "translate(-2 -6)" });
+    (PICTURES[task.goal.name] || drawFlag)(goalPicture);
+    goal.appendChild(goalPicture);
+    svg.appendChild(goal);
 
     // The robot is drawn facing right, around the point (0, 0). The page then
     // slides and turns the whole group with a CSS transform (see placeRobot).
+    // Seen from above, it is a tea trolley: two wheels, a pot lid and a nose.
     robotPicture = shape("g", { class: "robot" });
     robotPicture.appendChild(shape("rect", { class: "robot-wheel", x: -17, y: -31, width: 34, height: 9, rx: 3 }));
     robotPicture.appendChild(shape("rect", { class: "robot-wheel", x: -17, y: 22, width: 34, height: 9, rx: 3 }));
     robotPicture.appendChild(shape("rect", { class: "robot-body", x: -25, y: -25, width: 50, height: 50, rx: 12 }));
-    robotPicture.appendChild(shape("path", { class: "robot-nose", d: "M 3 -12 L 19 0 L 3 12 Z" }));
+    robotPicture.appendChild(shape("circle", { class: "robot-lid", cx: -7, cy: 0, r: 10 }));
+    robotPicture.appendChild(shape("circle", { class: "robot-knob", cx: -7, cy: 0, r: 3.2 }));
+    robotPicture.appendChild(shape("path", { class: "robot-nose", d: "M 8 -10 L 21 0 L 8 10 Z" }));
     svg.appendChild(robotPicture);
+
+    // Steam rises above the goal when the task is complete. It is added last,
+    // so it is drawn on top of the robot. The stylesheet hides it until then.
+    const steam = shape("g", {
+      class: "steam",
+      transform: "translate(" + centreX(task.goal.col) + " " + (centreY(task.goal.row) - 28) + ")"
+    });
+    ["M -11 0 c -5 -5 5 -10 0 -15", "M 0 -3 c -5 -5 5 -10 0 -15", "M 11 0 c -5 -5 5 -10 0 -15"].forEach(function (d) {
+      steam.appendChild(shape("path", { d: d }));
+    });
+    svg.appendChild(steam);
 
     page.world.replaceChildren(svg);
     jumpRobot(engine.startState(task));
@@ -171,7 +229,7 @@
   // Slides the robot to a square. The CSS transition makes it glide.
   function placeRobot(state) {
     robotPicture.style.transform =
-      "translate(" + centre(state.col) + "px, " + centre(state.row) + "px) rotate(" + angle + "deg)";
+      "translate(" + centreX(state.col) + "px, " + centreY(state.row) + "px) rotate(" + angle + "deg)";
   }
 
   // Puts the robot on a square straight away, with no glide (used when starting again).
@@ -258,6 +316,8 @@
     page.hintText.hidden = true;
     page.hintText.textContent = "";
     page.hint.textContent = "Show a hint";
+    page.realLife.hidden = true;
+    page.realLife.textContent = "";
     page.note.textContent = "";
   }
 
@@ -378,6 +438,7 @@
     const outcome = engine.run(task, parsed.commands);
     setRunning(true);
     page.next.hidden = true;
+    page.realLife.hidden = true;
     page.world.classList.remove("is-complete");
     page.world.scrollIntoView({ block: "nearest", behavior: calm ? "auto" : "smooth" });
     jumpRobot(engine.startState(task));
@@ -398,18 +459,30 @@
 
     page.trace.textContent = "";
     page.description.textContent = engine.describe(task, outcome.state);
-    report(outcome);
+    report(task, outcome);
     setRunning(false);
   }
 
-  // Turns the engine's outcome into words on the page.
-  function report(outcome) {
+  // Turns the engine's outcome into words on the page. The names ("cup",
+  // "plant") and the cheerful sentences come from the task, not from here.
+  function report(task, outcome) {
+    const goalName = engine.nameOf(task.goal, "goal");
+
     if (outcome.outcome === "complete") {
       progress.done[progress.current] = true;
       saveProgress();
       renderSteps();
       page.world.classList.add("is-complete");
-      showResult("complete", "Task complete.", "The robot reached the flag in " + plural(outcome.used, "command") + ".");
+      showResult(
+        "complete",
+        "Task complete.",
+        (task.done ? task.done + " " : "") +
+          "The robot reached the " + goalName + " in " + plural(outcome.used, "command") + "."
+      );
+      if (task.realLife) {
+        page.realLife.textContent = "In real life: " + task.realLife;
+        page.realLife.hidden = false;
+      }
       const isLast = progress.current === tasks.length - 1;
       page.next.textContent = isLast ? "See what you did" : "Go to task " + (progress.current + 2);
       page.next.hidden = false;
@@ -417,17 +490,18 @@
     }
 
     if (outcome.outcome === "short") {
-      const detail = outcome.passedFlag
-        ? "The robot reached the flag and then moved off it. Remove the extra commands and run it again."
-        : "The robot stopped " + plural(outcome.distance, "square") + " from the flag. Change the program and run it again.";
+      const detail = outcome.passedGoal
+        ? "The robot reached the " + goalName + " and then moved off it. Remove the extra commands and run it again."
+        : "The robot stopped " + plural(outcome.distance, "square") + " from the " + goalName +
+          ". Change the program and run it again.";
       showResult("short", "Not there yet.", detail);
       return;
     }
 
     const why =
-      outcome.reason === "rock"
-        ? "A rock is in the way. Change the program so the robot goes round it."
-        : "The robot cannot leave the world. Check which way it is facing.";
+      outcome.reason === "block"
+        ? "A " + engine.nameOf(outcome.block, "block") + " is in the way. Change the program so the robot goes round it."
+        : "The robot cannot go through the wall. Check which way it is facing.";
     showResult("stopped", "The program stopped at line " + outcome.line + ".", why);
   }
 

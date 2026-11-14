@@ -1,32 +1,81 @@
 /*
-  Tech taster, version 1 (prototype)
+  Tech taster, version 2 (prototype)
   ----------------------------------
-  The look borrows from British road signs: a green sign with white lettering
-  points the way, and everything else stays plain so the robot is the focus.
+  Every colour on the site comes from the variables in part 1. A "look" is one
+  block of those variables. There are four looks, and js/look.js chooses one by
+  setting data-look on the <html> element:
+
+    tea         blue-and-white china with tea amber (the default)
+    battenberg  pink and yellow, like the cake
+    night       dark, for a dim room or a projector
+    sign        the green road sign from version 1
+
+  None of them uses the university's colours, because this is not a university page.
 
   Order of this file:
-    1. colours, fonts and basics
-    2. page frame (top strip, footer)
-    3. the sign (headline)
-    4. the bench (world, code box, buttons, result)
+    1. the four looks, then fonts and basics
+    2. page frame (top strip, footer, colour chooser)
+    3. the sign (headline, story and picture)
+    4. the bench (floor, code box, buttons, result)
     5. finish panel and the list of tasters
     6. the two text pages (For tutors, About)
 */
 
-/* ---------- 1. Colours, fonts and basics ---------- */
+/* ---------- 1. The four looks ---------- */
 
+/* Tea trolley: the default. It is used when no other look is chosen. */
 :root {
-  --sign: #00703c;       /* sign green: headline sign and main buttons */
-  --sign-dark: #00552d;
-  --marker: #ffd200;     /* the robot, and part of the focus ring */
-  --ink: #10231a;        /* text */
-  --ink-soft: #3f5148;   /* secondary text */
-  --line: #5f7168;       /* borders and grid lines: at least 3:1 on white */
-  --paper: #f1f4f2;      /* page background */
-  --panel: #ffffff;
+  --hero-bg: #1f5fa8;      /* the headline sign: china blue */
+  --hero-ink: #ffffff;
+  --hero-rim: #ffffff;
+  --hero-accent: #ffd98f;
+
+  --brand: #1f5fa8;        /* main buttons and the open task */
+  --brand-dark: #174a85;
+  --on-brand: #ffffff;
+  --accent: #ffb238;       /* tea amber: highlights and half of the focus ring */
+  --on-accent: #14253d;
+
+  --ink: #14253d;          /* text */
+  --ink-soft: #43536b;     /* secondary text */
+  --line: #5c6b82;         /* borders and grid lines: at least 3:1 on the floor */
+  --rule: #d3dcea;         /* soft dividing lines */
+
+  --paper: #eef3f9;        /* page background */
+  --panel: #ffffff;        /* cards */
+  --panel-soft: #e3ebf5;   /* a card when the pointer is over it, table headings */
+  --field: #ffffff;        /* the code box */
+
+  --strip-bg: #14253d;
+  --strip-ink: #ffffff;
+
+  --chip: #ffe9bf;         /* the Add buttons */
+  --chip-hover: #ffd98f;
+  --hint-bg: #fff7e6;
+
+  --result-bg: #edf1f6;
+  --ok: #1a7f4b;
+  --ok-ink: #0f5c35;
+  --ok-bg: #e0f3e8;
+  --warn: #8a5a00;
+  --warn-bg: #fcf2d9;
+  --bad: #b3261e;
+  --bad-bg: #fbe9e7;
+
+  --tile: #ffffff;         /* one square of the floor */
+  --goal-tint: #d9f0e2;
+  --robot-body: #ffb238;
+  --robot-lid: #ffd98f;
+  --robot-ink: #14253d;
+  --robot-wheel: #14253d;
+  --shape-ink: #14253d;    /* outlines of the small pictures */
+  --cup: #ffffff;
+  --cup-stripe: #1f5fa8;
+  --leaf: #2e8b57;
+  --pot: #c9713c;
+  --steam: #5c6b82;
   --flag: #d4351c;
-  --not-yet: #8a5a00;
-  --stopped: #b3261e;
+  --rock: #7b8790;
 
   --font-sign: "Gill Sans Nova", "Gill Sans", "Gill Sans MT", Seravek, "Trebuchet MS", Calibri, system-ui, sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -34,6 +83,136 @@
 
   --radius: 10px;
 }
+
+/* Battenberg: pink and yellow. Only the colours that differ are listed. */
+[data-look="battenberg"] {
+  --hero-bg: #b4235a;
+  --hero-rim: #ffd84d;
+  --hero-accent: #ffd84d;
+
+  --brand: #b4235a;
+  --brand-dark: #8f1a47;
+  --accent: #ffd84d;
+  --on-accent: #2b1220;
+
+  --ink: #2b1220;
+  --ink-soft: #5a3f4d;
+  --line: #7a5f6c;
+  --rule: #ecd5de;
+
+  --paper: #fbf1f4;
+  --panel-soft: #f6e3ea;
+
+  --strip-bg: #2b1220;
+
+  --chip: #fff0b3;
+  --chip-hover: #ffe680;
+  --hint-bg: #fff9e0;
+  --result-bg: #f5eef1;
+
+  --goal-tint: #dff3e6;
+  --robot-body: #ffd84d;
+  --robot-lid: #fff0b3;
+  --robot-ink: #2b1220;
+  --robot-wheel: #2b1220;
+  --shape-ink: #2b1220;
+  --cup-stripe: #b4235a;
+  --steam: #7a5f6c;
+}
+
+/* Night shift: light text on dark panels. */
+[data-look="night"] {
+  --hero-bg: #2b3a8c;
+  --hero-rim: #ffb84d;
+  --hero-accent: #ffc978;
+
+  --brand: #ffb84d;
+  --brand-dark: #ffc978;
+  --on-brand: #12172b;
+  --accent: #ffb84d;
+  --on-accent: #12172b;
+
+  --ink: #f2f4ff;
+  --ink-soft: #c3c9e6;
+  --line: #8f98c7;
+  --rule: #343d6b;
+
+  --paper: #12172b;
+  --panel: #1c2340;
+  --panel-soft: #283058;
+  --field: #12172b;
+
+  --strip-bg: #0b0f1f;
+  --strip-ink: #f2f4ff;
+
+  --chip: #4a3a12;
+  --chip-hover: #5c4a1a;
+  --hint-bg: #262d52;
+
+  --result-bg: #232b4f;
+  --ok: #5fd39a;
+  --ok-ink: #8ff0bd;
+  --ok-bg: #153a2b;
+  --warn: #ffc65c;
+  --warn-bg: #3d3010;
+  --bad: #ff8a80;
+  --bad-bg: #45191a;
+
+  --tile: #262d52;
+  --goal-tint: #1d4a37;
+  --robot-body: #ffb84d;
+  --robot-lid: #ffd699;
+  --robot-ink: #12172b;
+  --robot-wheel: #8f98c7;
+  --shape-ink: #12172b;
+  --cup: #f2f4ff;
+  --cup-stripe: #2b3a8c;
+  --leaf: #4fbf85;
+  --pot: #d98b5f;
+  --steam: #c3c9e6;
+  --flag: #ff8a80;
+  --rock: #8f98c7;
+}
+
+/* Road sign: the look of version 1. */
+[data-look="sign"] {
+  --hero-bg: #00703c;
+  --hero-accent: #ffe14d;
+
+  --brand: #00703c;
+  --brand-dark: #00552d;
+  --accent: #ffd200;
+  --on-accent: #10231a;
+
+  --ink: #10231a;
+  --ink-soft: #3f5148;
+  --line: #5f7168;
+  --rule: #d5ddd8;
+
+  --paper: #f1f4f2;
+  --panel-soft: #e4ebe6;
+
+  --strip-bg: #10231a;
+
+  --chip: #fff4b8;
+  --chip-hover: #ffe97a;
+  --hint-bg: #fffbe6;
+  --result-bg: #eef1ef;
+  --ok: #00703c;
+  --ok-ink: #00552d;
+  --ok-bg: #e1f2e8;
+
+  --goal-tint: #d7efe1;
+  --robot-body: #ffd200;
+  --robot-lid: #fff4b8;
+  --robot-ink: #10231a;
+  --robot-wheel: #10231a;
+  --shape-ink: #10231a;
+  --cup-stripe: #00703c;
+  --steam: #5f7168;
+}
+
+/* ---------- Basics ---------- */
 
 *,
 *::before,
@@ -91,11 +270,11 @@ code {
   display: none !important;
 }
 
-/* One focus ring for everything. Yellow shows on dark backgrounds, ink on light ones. */
+/* One focus ring for everything. It has two colours, so one of them always shows. */
 :focus-visible {
   outline: 3px solid var(--ink);
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--marker);
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .visually-hidden {
@@ -119,8 +298,8 @@ code {
   left: 0.75rem;
   z-index: 10;
   padding: 0.5rem 0.9rem;
-  background: var(--marker);
-  color: var(--ink);
+  background: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -131,8 +310,8 @@ code {
 /* ---------- 2. Page frame ---------- */
 
 .strip {
-  background: var(--ink);
-  color: #fff;
+  background: var(--strip-bg);
+  color: var(--strip-ink);
   font-size: 0.85rem;
 }
 
@@ -187,23 +366,91 @@ code {
 .notice {
   margin: 0;
   padding: 0.7rem 0.9rem;
-  background: #fff4b8;
+  background: var(--chip);
   border: 2px solid var(--ink);
   border-radius: var(--radius);
+}
+
+/* The colour chooser in the footer */
+
+.looks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.looks-title {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.look-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0.9rem 0.3rem 0.5rem;
+  background: var(--panel);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.look-choice:hover {
+  background: var(--panel-soft);
+}
+
+/* The look in use has a heavier border, and its name is underlined. */
+.look-choice[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+
+/* Each dot shows its own look's colours, whichever look is in use. */
+.swatch-tea {
+  background: linear-gradient(135deg, #1f5fa8 50%, #ffb238 50%);
+}
+
+.swatch-battenberg {
+  background: linear-gradient(135deg, #b4235a 50%, #ffd84d 50%);
+}
+
+.swatch-night {
+  background: linear-gradient(135deg, #12172b 50%, #ffb84d 50%);
+}
+
+.swatch-sign {
+  background: linear-gradient(135deg, #00703c 50%, #ffd200 50%);
 }
 
 /* ---------- 3. The sign ---------- */
 
 .sign {
   padding: 6px;
-  background: var(--sign);
-  color: #fff;
+  background: var(--hero-bg);
+  color: var(--hero-ink);
   border-radius: 18px;
 }
 
 .sign-face {
   padding: 0.65rem 1.2rem 0.8rem;
-  border: 4px solid #fff;
+  border: 4px solid var(--hero-rim);
   border-radius: 13px;
 }
 
@@ -220,24 +467,65 @@ code {
   letter-spacing: -0.01em;
 }
 
+.sign-story,
 .sign-promise {
   margin: 0.3rem 0 0;
 }
 
-/* On a wide screen the promise sits beside the headline, which keeps the sign short
-   so the world, the code box and the result all fit on one laptop screen. */
+.sign-story {
+  font-weight: 600;
+}
+
+/* The picture is decoration, so it only appears where there is room for it. */
+.sign-picture {
+  display: none;
+}
+
+.sign-route {
+  fill: none;
+  stroke: var(--hero-ink);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 12.5;
+}
+
+.sign-picture .steam path {
+  stroke: var(--hero-ink);
+  opacity: 0.9;
+}
+
+/* On a wide screen the story sits beside the headline, which keeps the sign short
+   so the floor, the code box and the result all fit on one laptop screen. */
 @media (min-width: 56rem) {
   .sign-face {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 2rem;
     padding: 0.45rem 1.3rem 0.6rem;
   }
 
-  .sign-promise {
-    margin: 0 0 0.4rem;
+  .sign-face h1 {
+    flex: none; /* the headline keeps its full width and stays on one line */
+  }
+
+  .sign-side {
+    flex: 0 1 23rem;
+    font-size: 0.95rem;
     text-align: right;
+  }
+
+  .sign-story {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 68rem) {
+  .sign-picture {
+    display: block;
+    flex: none;
+    width: 12.5rem;
+    height: auto;
   }
 }
 
@@ -255,8 +543,13 @@ code {
     font-size: 2.1rem;
   }
 
+  .sign-story,
   .sign-promise {
     font-size: 0.92rem;
+  }
+
+  .sign-promise {
+    margin-top: 0.1rem;
   }
 
   .step:not([aria-current="step"]) {
@@ -319,7 +612,7 @@ code {
 }
 
 .step:hover {
-  background: #e4ebe6;
+  background: var(--panel-soft);
 }
 
 .step-number {
@@ -329,30 +622,30 @@ code {
   width: 1.75rem;
   height: 1.75rem;
   background: var(--ink);
-  color: #fff;
+  color: var(--panel);
   border-radius: 50%;
   font-family: var(--font-sign);
 }
 
 .step.is-done .step-number {
-  background: var(--sign);
+  background: var(--ok);
 }
 
 .step[aria-current="step"] {
-  background: var(--sign);
-  border-color: var(--sign);
-  color: #fff;
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
 }
 
 .step[aria-current="step"] .step-number {
-  background: var(--marker);
-  color: var(--ink);
+  background: var(--on-brand);
+  color: var(--brand);
 }
 
-/* The world */
+/* The floor and the small pictures on it */
 
 .world {
-  margin-top: 0.7rem;
+  margin-top: 0.5rem;
   scroll-margin-top: 0.75rem;
 }
 
@@ -363,13 +656,26 @@ code {
 }
 
 .tile {
-  fill: #fff;
+  fill: var(--tile);
   stroke: var(--line);
   stroke-width: 2;
 }
 
 .world.is-complete .tile-goal {
-  fill: #d7efe1;
+  fill: var(--goal-tint);
+}
+
+.goal-ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2.5;
+  stroke-dasharray: 5 7;
+}
+
+.world.is-complete .goal-ring {
+  stroke: var(--ok);
+  stroke-width: 4;
+  stroke-dasharray: none;
 }
 
 .robot {
@@ -381,34 +687,110 @@ code {
 }
 
 .robot-body {
-  fill: var(--marker);
-  stroke: var(--ink);
+  fill: var(--robot-body);
+  stroke: var(--robot-ink);
   stroke-width: 3;
 }
 
-.robot-wheel,
+.robot-lid {
+  fill: var(--robot-lid);
+  stroke: var(--robot-ink);
+  stroke-width: 2.5;
+}
+
+.robot-knob,
 .robot-nose {
-  fill: var(--ink);
+  fill: var(--robot-ink);
+}
+
+.robot-wheel {
+  fill: var(--robot-wheel);
+}
+
+.cup-body,
+.cup-saucer {
+  fill: var(--cup);
+  stroke: var(--shape-ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.cup-handle {
+  fill: none;
+  stroke: var(--shape-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.cup-stripe {
+  fill: var(--cup-stripe);
+}
+
+.plant-leaf {
+  fill: var(--leaf);
+  stroke: var(--shape-ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.plant-pot {
+  fill: var(--pot);
+  stroke: var(--shape-ink);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
 }
 
 .flag-pole {
-  stroke: var(--ink);
+  stroke: var(--shape-ink);
   stroke-width: 4;
   stroke-linecap: round;
 }
 
 .flag-cloth {
   fill: var(--flag);
-  stroke: var(--ink);
+  stroke: var(--shape-ink);
   stroke-width: 2;
   stroke-linejoin: round;
 }
 
 .rock {
-  fill: #7b8790;
-  stroke: var(--ink);
+  fill: var(--rock);
+  stroke: var(--shape-ink);
   stroke-width: 3;
   stroke-linejoin: round;
+}
+
+/* Steam: hidden until the task is complete, then it rises once and stays. */
+.steam path {
+  fill: none;
+  stroke: var(--steam);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.world.is-complete .steam path {
+  opacity: 1;
+  animation: steam-rise 0.7s ease-out both;
+}
+
+.world.is-complete .steam path:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.world.is-complete .steam path:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes steam-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .world-description {
@@ -416,13 +798,13 @@ code {
   font-size: 0.88rem;
 }
 
-/* The result, straight under the world */
+/* The result, straight under the floor */
 
 .result {
   min-height: 3.6rem;
   margin-top: 0.6rem;
   padding: 0.5rem 0.85rem;
-  background: #eef1ef;
+  background: var(--result-bg);
   border-left: 6px solid var(--line);
 }
 
@@ -431,30 +813,30 @@ code {
 }
 
 .result.is-complete {
-  background: #e1f2e8;
-  border-left-color: var(--sign);
+  background: var(--ok-bg);
+  border-left-color: var(--ok);
 }
 
 .result.is-complete strong {
-  color: var(--sign-dark);
+  color: var(--ok-ink);
 }
 
 .result.is-short {
-  background: #fcf2d9;
-  border-left-color: var(--not-yet);
+  background: var(--warn-bg);
+  border-left-color: var(--warn);
 }
 
 .result.is-short strong {
-  color: var(--not-yet);
+  color: var(--warn);
 }
 
 .result.is-stopped {
-  background: #fbe9e7;
-  border-left-color: var(--stopped);
+  background: var(--bad-bg);
+  border-left-color: var(--bad);
 }
 
 .result.is-stopped strong {
-  color: var(--stopped);
+  color: var(--bad);
 }
 
 .trace {
@@ -477,28 +859,28 @@ code {
 }
 
 .button:hover {
-  background: #e4ebe6;
+  background: var(--panel-soft);
 }
 
 .button-main {
-  background: var(--sign);
-  border-color: var(--sign);
-  color: #fff;
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
 }
 
 .button-main:hover {
-  background: var(--sign-dark);
-  border-color: var(--sign-dark);
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
 }
 
 .button-command {
-  background: #fff4b8;
+  background: var(--chip);
   font-family: var(--font-code);
   font-weight: 500;
 }
 
 .button-command:hover {
-  background: #ffe97a;
+  background: var(--chip-hover);
 }
 
 .button[aria-disabled="true"] {
@@ -530,7 +912,7 @@ code {
   width: 100%;
   margin-top: 0.35rem;
   padding: 0.55rem 0.75rem;
-  background: #fff;
+  background: var(--field);
   color: var(--ink);
   border: 2px solid var(--ink);
   border-radius: var(--radius);
@@ -556,13 +938,13 @@ code {
 .actions {
   margin-top: 0.9rem;
   padding-top: 0.9rem;
-  border-top: 2px solid #d5ddd8;
+  border-top: 2px solid var(--rule);
 }
 
 .hint {
   margin-top: 0.7rem;
   padding: 0.55rem 0.8rem;
-  background: #fffbe6;
+  background: var(--hint-bg);
   border: 2px dashed var(--line);
   border-radius: var(--radius);
 }
@@ -576,6 +958,15 @@ code {
 .word strong {
   color: var(--ink);
   font-family: var(--font-code);
+}
+
+/* "In real life": appears when a task is complete */
+.real-life {
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  background: var(--ok-bg);
+  border-left: 6px solid var(--ok);
+  font-size: 0.92rem;
 }
 
 /* ---------- 5. Finish panel and the list of tasters ---------- */
@@ -626,13 +1017,13 @@ code {
   margin-bottom: 0.6rem;
 }
 
-/* Three stacked sign plates, like a fingerpost */
+/* Three stacked plates, in the same colours as the headline sign */
 .fingerpost {
   max-width: 34rem;
   margin: 0;
   padding: 6px;
-  background: var(--sign);
-  color: #fff;
+  background: var(--hero-bg);
+  color: var(--hero-ink);
   border-radius: 14px;
   font-family: var(--font-sign);
   font-size: 1.1rem;
@@ -645,7 +1036,7 @@ code {
   justify-content: space-between;
   gap: 0.1rem 1.25rem;
   padding: 0.55rem 0.95rem;
-  border: 3px solid #fff;
+  border: 3px solid var(--hero-rim);
   border-radius: 9px;
 }
 
@@ -658,8 +1049,8 @@ code {
 }
 
 .route-open {
-  color: var(--marker);
-  font-weight: 600;
+  color: var(--hero-accent);
+  font-weight: 700;
 }
 
 /* ---------- 6. The two text pages ---------- */
@@ -702,7 +1093,7 @@ code {
 }
 
 .prose th {
-  background: #e3eae5;
+  background: var(--panel-soft);
 }
 
 .prose pre {
@@ -727,5 +1118,9 @@ code {
 @media (prefers-reduced-motion: reduce) {
   .robot {
     transition: none;
+  }
+
+  .world.is-complete .steam path {
+    animation: none;
   }
 }

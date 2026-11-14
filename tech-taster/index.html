@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Move the robot: a ten-minute tech taster (prototype)</title>
-  <meta name="description" content="Never written a line of code? Move a robot with a few commands. Ten minutes, no sign-up. A prototype for discussion.">
+  <meta name="description" content="Never written a line of code? Send a tea robot across the room with a few commands. Ten minutes, no sign-up. A prototype for discussion.">
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300703c'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='%23ffd200'/%3E%3Cpath d='M30 22l14 10-14 10z' fill='%2310231a'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f5fa8'/%3E%3Crect x='14' y='14' width='36' height='36' rx='9' fill='%23ffb238'/%3E%3Cpath d='M30 22l14 10-14 10z' fill='%2314253d'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/site.css">
+  <script src="js/look.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to the task</a>
@@ -30,7 +31,36 @@
           <span class="sign-ask">Never written a line of code?</span>
           <span class="sign-do">Move the robot.</span>
         </h1>
-        <p class="sign-promise">Ten minutes. No sign-up. Nobody sees your answers.</p>
+
+        <!-- A picture of the story: the robot, the way across the room, and the cup. -->
+        <svg class="sign-picture" viewBox="0 0 240 92" aria-hidden="true" focusable="false">
+          <path class="sign-route" d="M 84 52 H 160"/>
+          <g transform="translate(44 52)">
+            <rect class="robot-wheel" x="-17" y="-31" width="34" height="9" rx="3"/>
+            <rect class="robot-wheel" x="-17" y="22" width="34" height="9" rx="3"/>
+            <rect class="robot-body" x="-25" y="-25" width="50" height="50" rx="12"/>
+            <circle class="robot-lid" cx="-7" cy="0" r="10"/>
+            <circle class="robot-knob" cx="-7" cy="0" r="3.2"/>
+            <path class="robot-nose" d="M 8 -10 L 21 0 L 8 10 Z"/>
+          </g>
+          <g transform="translate(198 50)">
+            <rect class="cup-saucer" x="-22" y="19" width="44" height="5" rx="2.5"/>
+            <path class="cup-handle" d="M 16 -3 C 27 -3 27 11 14.4 11"/>
+            <path class="cup-body" d="M -16 -8 H 16 L 13 15 Q 12.6 18 9.6 18 H -9.6 Q -12.6 18 -13 15 Z"/>
+            <path class="cup-stripe" d="M -15.2 -2 H 15.2 L 14.7 2 H -14.7 Z"/>
+            <path class="cup-stripe" d="M -14.2 6 H 14.2 L 13.7 10 H -13.7 Z"/>
+            <g class="steam">
+              <path d="M -9 -13 c -5 -5 5 -10 0 -15"/>
+              <path d="M 1 -16 c -5 -5 5 -10 0 -15"/>
+              <path d="M 11 -13 c -5 -5 5 -10 0 -15"/>
+            </g>
+          </g>
+        </svg>
+
+        <div class="sign-side">
+          <p class="sign-story">Biscuit is a tea robot on its first day. It knows three words.</p>
+          <p class="sign-promise">Ten minutes. No sign-up. Nobody sees your answers.</p>
+        </div>
       </div>
     </section>
 
@@ -72,13 +102,14 @@
         </div>
         <p id="hint-text" class="hint" role="status" hidden></p>
         <p class="word">New word: <strong id="word-term"></strong>. <span id="word-meaning"></span></p>
+        <p id="real-life" class="real-life" role="status" hidden></p>
       </div>
 
     </section>
 
     <section id="finish" class="finish" aria-labelledby="finish-title" hidden>
       <h2 id="finish-title" tabindex="-1">You wrote three programs.</h2>
-      <p>You gave a machine instructions in a language it understands. You found a bug and you fixed it. Every programmer started the same way.</p>
+      <p>Biscuit delivered every cup, and you did the thinking. You gave a machine instructions in a language it understands. You found a bug and you fixed it. Every programmer started the same way.</p>
       <h3>Three words you now know</h3>
       <dl class="words">
         <div>
@@ -112,7 +143,14 @@
 
   <footer class="foot">
     <div class="wrap">
-      <p>Prototype for discussion, version 1. Not an official University of Bedfordshire page. No sign-up, no cookies and no tracking. Your progress stays in this browser.</p>
+      <div class="looks" role="group" aria-labelledby="looks-title">
+        <p id="looks-title" class="looks-title">Colours: this prototype comes in four looks. Try one.</p>
+        <button type="button" class="look-choice" data-look-choice="tea" aria-pressed="true"><span class="swatch swatch-tea" aria-hidden="true"></span>Tea trolley</button>
+        <button type="button" class="look-choice" data-look-choice="battenberg" aria-pressed="false"><span class="swatch swatch-battenberg" aria-hidden="true"></span>Battenberg</button>
+        <button type="button" class="look-choice" data-look-choice="night" aria-pressed="false"><span class="swatch swatch-night" aria-hidden="true"></span>Night shift</button>
+        <button type="button" class="look-choice" data-look-choice="sign" aria-pressed="false"><span class="swatch swatch-sign" aria-hidden="true"></span>Road sign</button>
+      </div>
+      <p>Prototype for discussion, version 2. Not an official University of Bedfordshire page. No sign-up, no cookies and no tracking. Your progress stays in this browser.</p>
       <nav class="foot-links" aria-label="More about this site">
         <a href="about.html">About this prototype</a>
         <a href="about.html#accessibility">Accessibility</a>

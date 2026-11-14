@@ -1,11 +1,15 @@
 /*
-  Tech taster engine (version 1)
+  Tech taster engine (version 2)
   ------------------------------
   This file knows nothing about the web page. It does three jobs:
 
     1. parse()    reads a program (plain text) and turns it into a list of commands;
-    2. run()      moves the robot through a small world of squares, one command at a time;
+    2. run()      moves the robot across a small floor of squares, one command at a time;
     3. describe() says in plain English where everything is.
+
+  It knows nothing about the story either. A task says where the goal is and
+  which squares are blocked, and gives them names ("cup", "plant"). The rules
+  only use the positions. The names are only used to build sentences.
 
   Because it never touches the page, it can be tested on its own:
       node tests/engine.test.js
@@ -133,19 +137,21 @@
     return row >= 0 && row < task.rows && col >= 0 && col < task.cols;
   }
 
-  function isRock(task, row, col) {
-    return task.rocks.some(function (rock) {
-      return rock.row === row && rock.col === col;
+  // The thing that blocks a square, or null if the square is free.
+  function blockAt(task, row, col) {
+    const found = task.blocks.find(function (block) {
+      return block.row === row && block.col === col;
     });
+    return found || null;
   }
 
-  function atFlag(task, state) {
-    return state.row === task.flag.row && state.col === task.flag.col;
+  function atGoal(task, state) {
+    return state.row === task.goal.row && state.col === task.goal.col;
   }
 
-  // How many squares the robot is from the flag (counting along rows and columns).
-  function distanceToFlag(task, state) {
-    return Math.abs(task.flag.row - state.row) + Math.abs(task.flag.col - state.col);
+  // How many squares the robot is from the goal (counting along rows and columns).
+  function distanceToGoal(task, state) {
+    return Math.abs(task.goal.row - state.row) + Math.abs(task.goal.col - state.col);
   }
 
   // Does one command. Returns the new state, or says why the robot cannot do it.
@@ -163,19 +169,20 @@
     if (!isInside(task, row, col)) {
       return { ok: false, reason: "edge" };
     }
-    if (isRock(task, row, col)) {
-      return { ok: false, reason: "rock" };
+    const block = blockAt(task, row, col);
+    if (block) {
+      return { ok: false, reason: "block", block: block };
     }
     return { ok: true, state: { row: row, col: col, dir: state.dir } };
   }
 
   // Runs a whole list of commands. The result has:
-  //   outcome  "complete" (on the flag), "short" (not there yet) or "stopped" (hit something)
+  //   outcome  "complete" (on the goal), "short" (not there yet) or "stopped" (hit something)
   //   frames   the robot's state after each command, so the page can animate them
   function run(task, commands) {
     let state = startState(task);
     const frames = [];
-    let touchedFlag = atFlag(task, state);
+    let touchedGoal = atGoal(task, state);
 
     for (const command of commands) {
       const result = apply(task, state, command.name);
@@ -183,6 +190,7 @@
         return {
           outcome: "stopped",
           reason: result.reason,
+          block: result.block || null,
           line: command.line,
           frames: frames,
           state: state,
@@ -191,12 +199,12 @@
       }
       state = result.state;
       frames.push({ line: command.line, name: command.name, state: state });
-      if (atFlag(task, state)) {
-        touchedFlag = true;
+      if (atGoal(task, state)) {
+        touchedGoal = true;
       }
     }
 
-    if (atFlag(task, state)) {
+    if (atGoal(task, state)) {
       return { outcome: "complete", frames: frames, state: state, used: commands.length };
     }
     return {
@@ -204,12 +212,17 @@
       frames: frames,
       state: state,
       used: commands.length,
-      distance: distanceToFlag(task, state),
-      passedFlag: touchedFlag
+      distance: distanceToGoal(task, state),
+      passedGoal: touchedGoal
     };
   }
 
-  /* ---------- 3. Describing the world ---------- */
+  /* ---------- 3. Describing the floor ---------- */
+
+  // The story's name for a thing, or a plain word if the task gives none.
+  function nameOf(thing, fallback) {
+    return thing && thing.name ? thing.name : fallback;
+  }
 
   function place(task, row, col) {
     if (task.rows === 1) {
@@ -218,23 +231,24 @@
     return "row " + (row + 1) + ", square " + (col + 1);
   }
 
-  // A plain-English description of the world. The page shows it under the
+  // A plain-English description of the floor. The page shows it under the
   // picture, so people who cannot see the picture get the same information.
   function describe(task, state) {
+    const goalName = nameOf(task.goal, "goal");
     const parts = [];
     if (task.rows === 1) {
-      parts.push("The world is one row of " + task.cols + " squares.");
+      parts.push("The floor is one row of " + task.cols + " squares.");
     } else {
-      parts.push("The world has " + task.rows + " rows of " + task.cols + " squares. Row 1 is at the top.");
+      parts.push("The floor has " + task.rows + " rows of " + task.cols + " squares. Row 1 is at the top.");
     }
     parts.push("The robot is on " + place(task, state.row, state.col) + ", facing " + FACING_WORDS[state.dir] + ".");
-    task.rocks.forEach(function (rock) {
-      parts.push("There is a rock on " + place(task, rock.row, rock.col) + ".");
+    task.blocks.forEach(function (block) {
+      parts.push("There is a " + nameOf(block, "block") + " on " + place(task, block.row, block.col) + ".");
     });
-    if (atFlag(task, state)) {
-      parts.push("The robot is on the flag.");
+    if (atGoal(task, state)) {
+      parts.push("The robot has reached the " + goalName + ".");
     } else {
-      parts.push("The flag is on " + place(task, task.flag.row, task.flag.col) + ".");
+      parts.push("The " + goalName + " is on " + place(task, task.goal.row, task.goal.col) + ".");
     }
     return parts.join(" ");
   }
@@ -246,7 +260,8 @@
     run: run,
     describe: describe,
     startState: startState,
-    atFlag: atFlag
+    atGoal: atGoal,
+    nameOf: nameOf
   };
 
   // In Node (for the tests) export the functions. In a browser, hang them on window.
